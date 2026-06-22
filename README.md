@@ -53,7 +53,7 @@ Everything is plain config you can read in [`config/`](config/) — nothing hidd
 
 ## Why
 
-I built this because my eyes hurt. I spend most of my day in a terminal, so I asked Claude to help me rebuild mine to be genuinely easy on the eyes — then realised the setup was worth sharing with anyone who codes long days. **[The full story →](https://sameerzahir.com/thoughts/)**
+I built this because my eyes hurt. I spend most of my day in a terminal, so I asked Claude to help me rebuild mine to be genuinely easy on the eyes — then realised the setup was worth sharing with anyone who codes long days. **[The full story →](https://sameerzahir.com/thoughts/an-afternoon-not-a-degree/)**
 
 Most terminal setups are dark, high-contrast, and built to look striking in a screenshot. That's great until you're eight hours into a session in a bright room and your eyes are done.
 
