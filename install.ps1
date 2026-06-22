@@ -2,7 +2,7 @@
 <#
 .SYNOPSIS
   Squintless - easy-on-the-eyes Gruvbox-light terminal + Claude Code setup.
-  https://github.com/sameerzahir97-cloud/squintless
+  https://github.com/sameer-zahir/squintless
 
 .DESCRIPTION
   Installs the tools and drops in the configs that make up Squintless:
@@ -31,13 +31,13 @@
   winget-installed tools in place.
 
 .EXAMPLE
-  irm https://raw.githubusercontent.com/sameerzahir97-cloud/squintless/main/install.ps1 | iex
+  irm https://raw.githubusercontent.com/sameer-zahir/squintless/main/install.ps1 | iex
 
 .EXAMPLE
   .\install.ps1 -WithTerminalDefaults -WithClaude
 
 .EXAMPLE
-  $s = irm https://raw.githubusercontent.com/sameerzahir97-cloud/squintless/main/install.ps1
+  $s = irm https://raw.githubusercontent.com/sameer-zahir/squintless/main/install.ps1
   & ([scriptblock]::Create($s)) -Uninstall
 #>
 [CmdletBinding()]
@@ -63,7 +63,7 @@ if ($PSVersionTable.PSVersion.Major -lt 7) {
 try { [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12 } catch {}
 
 $ErrorActionPreference = 'Stop'
-$RawBase = 'https://raw.githubusercontent.com/sameerzahir97-cloud/squintless/main'
+$RawBase = 'https://raw.githubusercontent.com/sameer-zahir/squintless/main'
 
 # ---------- pretty output ----------
 function Write-Step($m) { Write-Host "`n==> $m" -ForegroundColor Cyan }
@@ -357,5 +357,5 @@ Write-Host @"
          set antialiasingMode "cleartype", cellHeight ~1.0-1.15, font size 11-12. See the README.
 
     Backups (*.squintless-*.bak) sit next to every file that was changed.
-    Loved it? Star the repo - it helps a lot: https://github.com/sameerzahir97-cloud/squintless
+    Loved it? Star the repo - it helps a lot: https://github.com/sameer-zahir/squintless
 "@ -ForegroundColor DarkGray

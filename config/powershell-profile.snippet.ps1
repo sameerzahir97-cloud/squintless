@@ -1,6 +1,6 @@
 # >>> squintless >>>
 # Squintless - easy-on-the-eyes Gruvbox-light terminal.
-# https://github.com/sameerzahir97-cloud/squintless
+# https://github.com/sameer-zahir/squintless
 # This block is managed by Squintless. Edit between the markers or remove the whole block to uninstall.
 
 Import-Module PSReadLine -ErrorAction SilentlyContinue

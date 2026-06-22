@@ -8,8 +8,8 @@ A one-command, eye-strain–optimized terminal + Claude Code setup for Windows.
 Gruvbox-light done *cohesively* — terminal, font, shell, git diffs and your Claude Code statusline all speak the same calm palette.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-79740E.svg)](LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/sameerzahir97-cloud/squintless?style=flat&color=B57614)](https://github.com/sameerzahir97-cloud/squintless/stargazers)
-[![PRs welcome](https://img.shields.io/badge/PRs-welcome-076678.svg)](https://github.com/sameerzahir97-cloud/squintless/pulls)
+[![GitHub stars](https://img.shields.io/github/stars/sameer-zahir/squintless?style=flat&color=B57614)](https://github.com/sameer-zahir/squintless/stargazers)
+[![PRs welcome](https://img.shields.io/badge/PRs-welcome-076678.svg)](https://github.com/sameer-zahir/squintless/pulls)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%C2%B7%20PowerShell%207-8F3F71.svg)
 
 ![Squintless terminal preview](assets/hero.png)
@@ -18,18 +18,18 @@ Gruvbox-light done *cohesively* — terminal, font, shell, git diffs and your Cl
 
 ## Install
 
-**Requires:** Windows · [PowerShell 7+](https://aka.ms/powershell) · [Windows Terminal](https://aka.ms/terminal). Not on PowerShell 7 yet? `winget install Microsoft.PowerShell`, then open `pwsh` and paste the line below. *(macOS/Linux scripts welcome — [PRs open](https://github.com/sameerzahir97-cloud/squintless/pulls).)*
+**Requires:** Windows · [PowerShell 7+](https://aka.ms/powershell) · [Windows Terminal](https://aka.ms/terminal). Not on PowerShell 7 yet? `winget install Microsoft.PowerShell`, then open `pwsh` and paste the line below. *(macOS/Linux scripts welcome — [PRs open](https://github.com/sameer-zahir/squintless/pulls).)*
 
 One line in **PowerShell 7+** — adds the Gruvbox-light scheme and applies it for you:
 
 ```powershell
-irm https://raw.githubusercontent.com/sameerzahir97-cloud/squintless/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/sameer-zahir/squintless/main/install.ps1 | iex
 ```
 
 Want the full treatment (also apply the **OLED-tuned font/render defaults** to Windows Terminal **and** theme Claude Code)?
 
 ```powershell
-$s = irm https://raw.githubusercontent.com/sameerzahir97-cloud/squintless/main/install.ps1
+$s = irm https://raw.githubusercontent.com/sameer-zahir/squintless/main/install.ps1
 & ([scriptblock]::Create($s)) -WithTerminalDefaults -WithClaude
 ```
 
@@ -86,7 +86,7 @@ The defaults are tuned for a **HiDPI / OLED laptop** (≈215 PPI, 200% scaling).
 **Uninstall:** re-run the installer with `-Uninstall`:
 
 ```powershell
-$s = irm https://raw.githubusercontent.com/sameerzahir97-cloud/squintless/main/install.ps1
+$s = irm https://raw.githubusercontent.com/sameer-zahir/squintless/main/install.ps1
 & ([scriptblock]::Create($s)) -Uninstall
 ```
 
@@ -97,7 +97,7 @@ It removes the profile block, the Windows Terminal color scheme, the `git-delta`
 Clone it and take only the pieces you want — every file in [`config/`](config/) is standalone:
 
 ```powershell
-git clone https://github.com/sameerzahir97-cloud/squintless.git
+git clone https://github.com/sameer-zahir/squintless.git
 cd squintless
 .\install.ps1 -WithTerminalDefaults -WithClaude   # or copy individual config files by hand
 ```
@@ -107,13 +107,13 @@ cd squintless
 Squintless is also a tiny **Claude Code plugin**. Add the marketplace and install it, then run `/squintless-setup` and Claude will set up the light theme + statusline for you:
 
 ```
-/plugin marketplace add sameerzahir97-cloud/squintless
+/plugin marketplace add sameer-zahir/squintless
 /plugin install squintless@squintless
 ```
 
 ## Credits
 
-Made by **[Sameer Zahir](https://sameerzahir.com)** · [@sameerzahir97-cloud](https://github.com/sameerzahir97-cloud)
+Made by **[Sameer Zahir](https://sameerzahir.com)** · [@sameer-zahir](https://github.com/sameer-zahir)
 
 Built on the shoulders of [Gruvbox](https://github.com/morhetz/gruvbox), [JetBrains Mono](https://www.jetbrains.com/lp/mono/), [Nerd Fonts](https://github.com/ryanoasis/nerd-fonts), [oh-my-posh](https://ohmyposh.dev), [git-delta](https://github.com/dandavison/delta) and [ccstatusline](https://github.com/sirmalloc/ccstatusline). The color scheme is also available for other terminals via [iTerm2-Color-Schemes](https://github.com/mbadolato/iTerm2-Color-Schemes).
 
@@ -121,7 +121,7 @@ Contributions welcome — macOS/Linux install scripts, a dark variant, and more 
 
 <div align="center">
 
-**[⭐ Star Squintless](https://github.com/sameerzahir97-cloud/squintless)** if it helped your eyes.
+**[⭐ Star Squintless](https://github.com/sameer-zahir/squintless)** if it helped your eyes.
 
 MIT © 2026 Sameer Zahir
 

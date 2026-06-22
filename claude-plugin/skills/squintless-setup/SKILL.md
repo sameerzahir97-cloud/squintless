@@ -16,11 +16,11 @@ Squintless is a one-command, eye-strain-optimized **Gruvbox-light** setup for th
 
 1. **Full setup (Windows / PowerShell 7+).** Have them run:
    ```powershell
-   irm https://raw.githubusercontent.com/sameerzahir97-cloud/squintless/main/install.ps1 | iex
+   irm https://raw.githubusercontent.com/sameer-zahir/squintless/main/install.ps1 | iex
    ```
    For the font/render defaults and the Claude Code theme + statusline as well:
    ```powershell
-   $s = irm https://raw.githubusercontent.com/sameerzahir97-cloud/squintless/main/install.ps1
+   $s = irm https://raw.githubusercontent.com/sameer-zahir/squintless/main/install.ps1
    & ([scriptblock]::Create($s)) -WithTerminalDefaults -WithClaude
    ```
 
@@ -30,4 +30,4 @@ Squintless is a one-command, eye-strain-optimized **Gruvbox-light** setup for th
 
 3. **Not on Windows?** Point them to the portable Gruvbox-light color scheme and the per-tool files in the repo's `config/` directory. Native macOS/Linux installers are a work in progress - contributions welcome.
 
-Repo: https://github.com/sameerzahir97-cloud/squintless · by Sameer Zahir (https://sameerzahir.com).
+Repo: https://github.com/sameer-zahir/squintless · by Sameer Zahir (https://sameerzahir.com).

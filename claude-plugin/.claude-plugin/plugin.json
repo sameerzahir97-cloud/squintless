@@ -6,10 +6,10 @@
   "author": {
     "name": "Sameer Zahir",
     "email": "sameerzahir97@gmail.com",
-    "url": "https://github.com/sameerzahir97-cloud"
+    "url": "https://github.com/sameer-zahir"
   },
-  "homepage": "https://github.com/sameerzahir97-cloud/squintless",
-  "repository": "https://github.com/sameerzahir97-cloud/squintless",
+  "homepage": "https://github.com/sameer-zahir/squintless",
+  "repository": "https://github.com/sameer-zahir/squintless",
   "license": "MIT",
   "keywords": ["theme", "light-theme", "gruvbox", "eye-strain", "accessibility", "statusline", "terminal"]
 }
