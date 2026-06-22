@@ -207,6 +207,7 @@ Set-Content -LiteralPath $profilePath -Value $updated -Encoding utf8
 # ---------- 5. git-delta ----------
 Write-Step 'git-delta (gruvbox-light)'
 if (Get-Command git -ErrorAction SilentlyContinue) {
+  Backup-File "$env:USERPROFILE\.gitconfig"   # honour the "backs up every file it touches" promise
   git config --global core.pager delta
   git config --global interactive.diffFilter 'delta --color-only'
   git config --global delta.navigate true

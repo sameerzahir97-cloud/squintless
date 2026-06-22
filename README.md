@@ -33,6 +33,8 @@ $s = irm https://raw.githubusercontent.com/sameerzahir97-cloud/squintless/main/i
 
 The installer is **idempotent** and **non-destructive** — it backs up every file it touches (`*.squintless-*.bak`), only wires up tools you actually have, and you can re-run it any time. Restart your terminal when it's done.
 
+**Prefer to read it first?** Clone the repo and run `.\install.ps1` locally — every config it places lives in [`config/`](config/), and it writes a `*.squintless-*.bak` next to anything it changes (your Windows Terminal settings, PowerShell profile, `~/.gitconfig`, and Claude settings). Nothing is hidden.
+
 > ⭐ If Squintless saves your eyes, a star genuinely helps it reach the next person squinting at their screen.
 
 ## What you get
