@@ -25,18 +25,42 @@
 .PARAMETER SkipDeps
   Don't install any winget/bun packages; just place the configs.
 
+.PARAMETER Uninstall
+  Reverse what the installer changed (PowerShell profile block, Windows Terminal
+  color scheme, git-delta config, theme files). Backs up before editing and leaves
+  winget-installed tools in place.
+
 .EXAMPLE
   irm https://raw.githubusercontent.com/sameerzahir97-cloud/squintless/main/install.ps1 | iex
 
 .EXAMPLE
   .\install.ps1 -WithTerminalDefaults -WithClaude
+
+.EXAMPLE
+  $s = irm https://raw.githubusercontent.com/sameerzahir97-cloud/squintless/main/install.ps1
+  & ([scriptblock]::Create($s)) -Uninstall
 #>
 [CmdletBinding()]
 param(
   [switch]$WithTerminalDefaults,
   [switch]$WithClaude,
-  [switch]$SkipDeps
+  [switch]$SkipDeps,
+  [switch]$Uninstall
 )
+
+# PowerShell 7+ is required. The #Requires line above is silently ignored when this
+# script is run via `irm ... | iex`, so enforce it explicitly here. Use `return`
+# (never `exit`) so the one-liner path doesn't close the user's window.
+if ($PSVersionTable.PSVersion.Major -lt 7) {
+  Write-Host "`n  Squintless needs PowerShell 7+ (you're on $($PSVersionTable.PSVersion))." -ForegroundColor Yellow
+  Write-Host   "  Install it, then re-run this inside a PowerShell 7 window:`n" -ForegroundColor Yellow
+  Write-Host   "    winget install --id Microsoft.PowerShell -e" -ForegroundColor Cyan
+  Write-Host   "    pwsh   # then paste the install command again`n" -ForegroundColor DarkGray
+  return
+}
+
+# Belt-and-suspenders for older TLS defaults (harmless no-op on PS7).
+try { [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12 } catch {}
 
 $ErrorActionPreference = 'Stop'
 $RawBase = 'https://raw.githubusercontent.com/sameerzahir97-cloud/squintless/main'
@@ -84,6 +108,65 @@ function ConvertFrom-Jsonc {
   $noBlock = [regex]::Replace($Text, '/\*[\s\S]*?\*/', '')
   $noLine  = [regex]::Replace($noBlock, '(?m)^\s*//.*$', '')
   return $noLine | ConvertFrom-Json
+}
+
+# ---------- uninstall path ----------
+if ($Uninstall) {
+  Write-Step 'Uninstalling Squintless'
+  $schemeName = 'Squintless (Gruvbox Light)'
+
+  # 1. Remove the marker-delimited block from the PowerShell profile.
+  $profilePath = $PROFILE.CurrentUserCurrentHost
+  if (Test-Path -LiteralPath $profilePath) {
+    $cur = Get-Content -Raw -LiteralPath $profilePath
+    if ([string]::IsNullOrEmpty($cur)) { $cur = '' }
+    $s = $cur.IndexOf('# >>> squintless >>>'); $e = $cur.IndexOf('# <<< squintless <<<')
+    if ($s -ge 0 -and $e -gt $s) {
+      Backup-File $profilePath
+      $new = ($cur.Substring(0, $s).TrimEnd() + "`n" + $cur.Substring($e + '# <<< squintless <<<'.Length).TrimStart()).Trim()
+      Set-Content -LiteralPath $profilePath -Value $(if ($new) { "$new`n" } else { '' }) -Encoding utf8
+      Write-Ok 'removed Squintless block from $PROFILE'
+    } else { Write-Skip 'no Squintless block found in $PROFILE' }
+  }
+
+  # 2. Remove the WT color scheme + unset profiles.defaults.colorScheme if it is ours.
+  $wtPath = @(
+    "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json",
+    "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminalPreview_8wekyb3d8bbwe\LocalState\settings.json",
+    "$env:LOCALAPPDATA\Microsoft\Windows Terminal\settings.json"
+  ) | Where-Object { Test-Path $_ } | Select-Object -First 1
+  if ($wtPath) {
+    try {
+      $wt = ConvertFrom-Jsonc (Get-Content -Raw -LiteralPath $wtPath)
+      Backup-File $wtPath
+      if ($wt.schemes) { $wt.schemes = @($wt.schemes | Where-Object { $_.name -ne $schemeName }) }
+      if ($wt.profiles -and $wt.profiles.defaults -and $wt.profiles.defaults.colorScheme -eq $schemeName) {
+        $wt.profiles.defaults.PSObject.Properties.Remove('colorScheme') | Out-Null
+      }
+      ($wt | ConvertTo-Json -Depth 32) | Set-Content -LiteralPath $wtPath -Encoding utf8
+      Write-Ok 'removed color scheme from Windows Terminal'
+    } catch { Write-Warn2 "couldn't edit settings.json - remove the `"$schemeName`" scheme manually." }
+  }
+
+  # 3. Unset the git-delta config we added (other ~/.gitconfig settings untouched).
+  if (Get-Command git -ErrorAction SilentlyContinue) {
+    foreach ($k in 'core.pager','interactive.diffFilter','delta.navigate','delta.line-numbers','delta.light','delta.syntax-theme','merge.conflictStyle') {
+      git config --global --unset $k 2>$null
+    }
+    Write-Ok 'unset git-delta config'
+  }
+
+  # 4. Remove theme files we placed.
+  $ompTarget = "$env:USERPROFILE\.config\ohmyposh\squintless.omp.json"
+  if (Test-Path $ompTarget) { Remove-Item -LiteralPath $ompTarget -Force; Write-Ok 'removed oh-my-posh theme' }
+
+  Write-Host "`n==> Squintless uninstalled." -ForegroundColor Green
+  Write-Host @"
+    winget-installed tools (oh-my-posh, delta, zoxide, eza, bat, lazygit, bun) were left in place.
+    Remove any you don't want with: winget uninstall --id <id>
+    Backups (*.squintless-*.bak) remain next to every edited file - restore one to fully revert.
+"@ -ForegroundColor DarkGray
+  return
 }
 
 # ---------- 1. dependencies ----------
@@ -151,16 +234,22 @@ if (-not $wtPath) {
     if (-not $wt.schemes) { $wt | Add-Member -NotePropertyName schemes -NotePropertyValue @() -Force }
     $kept = @($wt.schemes | Where-Object { $_.name -ne $scheme.name })
     $wt.schemes = @($kept + $scheme)
+    # Always make the scheme active so the basic one-liner is visibly applied.
+    # profiles.defaults.colorScheme applies to every profile that doesn't override its
+    # own colorScheme (the common case) and is non-destructive - backup made above.
+    if (-not $wt.profiles)          { $wt | Add-Member -NotePropertyName profiles -NotePropertyValue ([pscustomobject]@{}) -Force }
+    if (-not $wt.profiles.defaults) { $wt.profiles | Add-Member -NotePropertyName defaults -NotePropertyValue ([pscustomobject]@{}) -Force }
+    $wt.profiles.defaults | Add-Member -NotePropertyName colorScheme -NotePropertyValue $scheme.name -Force
+    Write-Ok "set `"$($scheme.name)`" as the active color scheme"
     if ($WithTerminalDefaults) {
+      # Also apply the OLED-tuned font / cellHeight / cursor / grayscale-AA settings.
       $defaults = Get-SquintlessFile 'windows-terminal.defaults.json' | ConvertFrom-Json
-      if (-not $wt.profiles)          { $wt | Add-Member -NotePropertyName profiles -NotePropertyValue ([pscustomobject]@{}) -Force }
-      if (-not $wt.profiles.defaults) { $wt.profiles | Add-Member -NotePropertyName defaults -NotePropertyValue ([pscustomobject]@{}) -Force }
       foreach ($p in $defaults.PSObject.Properties) {
         $wt.profiles.defaults | Add-Member -NotePropertyName $p.Name -NotePropertyValue $p.Value -Force
       }
-      Write-Ok 'applied font / render defaults to profiles.defaults'
+      Write-Ok 'applied OLED font / render tuning to profiles.defaults'
     } else {
-      Write-Skip 'font/render defaults not applied (re-run with -WithTerminalDefaults). Set the scheme yourself: Settings > profile > Appearance > Color scheme > "Squintless (Gruvbox Light)"'
+      Write-Skip 'font tuning skipped - re-run with -WithTerminalDefaults for the OLED-tuned font (size/cellHeight)'
     }
     ($wt | ConvertTo-Json -Depth 32) | Set-Content -LiteralPath $wtPath -Encoding utf8
     Write-Ok "scheme installed -> $(Split-Path -Leaf $wtPath) (note: re-saving strips // comments; backup made)"
@@ -261,11 +350,11 @@ if ($doClaude) {
 Write-Host "`n==> Squintless installed." -ForegroundColor Green
 Write-Host @"
     Next:
-      1. Close and reopen Windows Terminal (fonts/scheme apply on a fresh window).
-      2. If you skipped -WithTerminalDefaults, pick "Squintless (Gruvbox Light)" under
-         Settings > your profile > Appearance, and set the font to "JetBrainsMono NFM".
-      3. Tuned for a HiDPI/OLED laptop. On a standard LCD, in Windows Terminal set
-         antialiasingMode "cleartype", cellHeight ~1.0-1.15, font size 11-12. See the README.
+      1. Close and reopen Windows Terminal (the scheme/font apply on a fresh window).
+      2. The Squintless color scheme is applied automatically. For the full look, set your
+         font to "JetBrainsMono NFM" (or re-run with -WithTerminalDefaults to do it for you).
+      3. The -WithTerminalDefaults tuning targets a HiDPI/OLED laptop. On a standard LCD,
+         set antialiasingMode "cleartype", cellHeight ~1.0-1.15, font size 11-12. See the README.
 
     Backups (*.squintless-*.bak) sit next to every file that was changed.
     Loved it? Star the repo - it helps a lot: https://github.com/sameerzahir97-cloud/squintless

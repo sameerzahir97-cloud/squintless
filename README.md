@@ -18,13 +18,15 @@ Gruvbox-light done *cohesively* — terminal, font, shell, git diffs and your Cl
 
 ## Install
 
-One line in **PowerShell 7+**:
+**Requires:** Windows · [PowerShell 7+](https://aka.ms/powershell) · [Windows Terminal](https://aka.ms/terminal). Not on PowerShell 7 yet? `winget install Microsoft.PowerShell`, then open `pwsh` and paste the line below. *(macOS/Linux scripts welcome — [PRs open](https://github.com/sameerzahir97-cloud/squintless/pulls).)*
+
+One line in **PowerShell 7+** — adds the Gruvbox-light scheme and applies it for you:
 
 ```powershell
 irm https://raw.githubusercontent.com/sameerzahir97-cloud/squintless/main/install.ps1 | iex
 ```
 
-Want the full treatment (apply the font/render defaults to Windows Terminal **and** theme Claude Code)?
+Want the full treatment (also apply the **OLED-tuned font/render defaults** to Windows Terminal **and** theme Claude Code)?
 
 ```powershell
 $s = irm https://raw.githubusercontent.com/sameerzahir97-cloud/squintless/main/install.ps1
@@ -81,7 +83,14 @@ The defaults are tuned for a **HiDPI / OLED laptop** (≈215 PPI, 200% scaling).
 5. Configures `git-delta` in `~/.gitconfig`.
 6. *(optional, `-WithClaude`)* installs ccstatusline and sets Claude Code `theme: light` + statusline.
 
-**Uninstall:** delete the `# >>> squintless >>> … # <<< squintless <<<` block from your `$PROFILE`, or restore any `*.squintless-*.bak` backup. Nothing installs a service or runs in the background.
+**Uninstall:** re-run the installer with `-Uninstall`:
+
+```powershell
+$s = irm https://raw.githubusercontent.com/sameerzahir97-cloud/squintless/main/install.ps1
+& ([scriptblock]::Create($s)) -Uninstall
+```
+
+It removes the profile block, the Windows Terminal color scheme, the `git-delta` config and the oh-my-posh theme — backing up each file first, and leaving winget-installed tools in place. Prefer to do it by hand? Delete the `# >>> squintless >>> … # <<< squintless <<<` block from your `$PROFILE`, or restore any `*.squintless-*.bak` backup. Nothing installs a service or runs in the background.
 
 ## Prefer to cherry-pick?
 
