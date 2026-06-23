@@ -176,7 +176,7 @@ Made by **[Sameer Zahir](https://sameerzahir.com)** · [@sameer-zahir](https://g
 
 Built on the shoulders of [Gruvbox](https://github.com/morhetz/gruvbox), [JetBrains Mono](https://www.jetbrains.com/lp/mono/), [Nerd Fonts](https://github.com/ryanoasis/nerd-fonts), [oh-my-posh](https://ohmyposh.dev), [git-delta](https://github.com/dandavison/delta) and [ccstatusline](https://github.com/sirmalloc/ccstatusline). The color scheme is also available for other terminals via [iTerm2-Color-Schemes](https://github.com/mbadolato/iTerm2-Color-Schemes).
 
-Contributions welcome — more terminals, more package managers, and a Homebrew tap are all fair game. Open an issue or PR.
+Contributions welcome: more terminals, more package managers (a Homebrew tap would be great), more palettes. Open an issue or PR.
 
 <div align="center">
 

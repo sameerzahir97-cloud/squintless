@@ -18,6 +18,7 @@ cd worker
 wrangler deploy          # publishes to https://squintless.<your-subdomain>.workers.dev
 ```
 
-To serve from a custom domain (e.g. `sameerzahir.com/sq`), uncomment the `routes`
-block in `wrangler.toml` (the zone must be on your Cloudflare account), then redeploy.
-302s mean you can later point `/sq` at a pinned release tag without touching callers.
+The custom-domain routes (`sameerzahir.com/sq` and `/sh`) are already active in
+`wrangler.toml` and deployed. To change them, edit that `routes` block (the zone must
+be on your Cloudflare account) and run `wrangler deploy`. Because these are 302
+redirects, you can later point `/sq` at a pinned release tag without touching any caller.
