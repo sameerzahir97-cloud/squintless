@@ -4,13 +4,13 @@
 
 ### Easy on the eyes.
 
-A one-command, eye-strain–optimized terminal + Claude Code setup for Windows.
+A one-command, eye-strain–optimized terminal + Claude Code setup for **Windows, macOS & Linux**.
 Pick your palette — soft **Gruvbox light** (default) or deep **Tokyo Night Moon** (dark) — done *cohesively*: terminal, font, shell, git diffs and your Claude Code statusline all speak the same calm palette.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-79740E.svg)](LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/sameer-zahir/squintless?style=flat&color=B57614)](https://github.com/sameer-zahir/squintless/stargazers)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-076678.svg)](https://github.com/sameer-zahir/squintless/pulls)
-![Platform](https://img.shields.io/badge/platform-Windows%20%C2%B7%20PowerShell%207-8F3F71.svg)
+![Platform](https://img.shields.io/badge/platform-Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-8F3F71.svg)
 
 ![Squintless terminal preview](assets/hero.png)
 
@@ -18,26 +18,38 @@ Pick your palette — soft **Gruvbox light** (default) or deep **Tokyo Night Moo
 
 ## Install
 
-**Requires:** Windows · [PowerShell 7+](https://aka.ms/powershell) · [Windows Terminal](https://aka.ms/terminal). Not on PowerShell 7 yet? `winget install Microsoft.PowerShell`, then open `pwsh` and paste the line below. *(macOS/Linux scripts welcome — [PRs open](https://github.com/sameer-zahir/squintless/pulls).)*
+It asks **light or dark** (or pass a flag), then sets everything up. The installer is **idempotent** and **non-destructive** — it backs up every file it touches (`*.squintless-*.bak`), only wires up tools you actually have, and you can re-run or uninstall any time. Restart your terminal when it's done.
 
-One line in **PowerShell 7+** — it asks **light or dark**, then adds that scheme and applies it for you:
+### Windows · [PowerShell 7+](https://aka.ms/powershell)
 
 ```powershell
 irm https://raw.githubusercontent.com/sameer-zahir/squintless/main/install.ps1 | iex
 ```
 
-Know which you want? Skip the prompt with `-Light` or `-Dark`, and add the full treatment (the **font/render defaults** for Windows Terminal **and** the matching Claude Code theme):
+Choose up front and add the full treatment (font/render defaults + the matching Claude Code theme):
 
 ```powershell
 $s = irm https://raw.githubusercontent.com/sameer-zahir/squintless/main/install.ps1
 & ([scriptblock]::Create($s)) -Dark -WithTerminalDefaults -WithClaude
 ```
 
-*(Piping `irm | iex` in a non-interactive shell skips the prompt and defaults to light.)*
+*(Not on PowerShell 7? `winget install Microsoft.PowerShell`, open `pwsh`, paste again. Piping `irm | iex` non-interactively defaults to light.)*
 
-The installer is **idempotent** and **non-destructive** — it backs up every file it touches (`*.squintless-*.bak`), only wires up tools you actually have, and you can re-run it any time. Restart your terminal when it's done.
+### macOS · Linux
 
-**Prefer to read it first?** Clone the repo and run `.\install.ps1` locally — every config it places lives in [`config/`](config/), and it writes a `*.squintless-*.bak` next to anything it changes (your Windows Terminal settings, PowerShell profile, `~/.gitconfig`, and Claude settings). Nothing is hidden.
+```bash
+curl -fsSL https://raw.githubusercontent.com/sameer-zahir/squintless/main/install.sh | bash
+```
+
+Choose up front and add Claude Code:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/sameer-zahir/squintless/main/install.sh | bash -s -- --dark --with-claude
+```
+
+It installs the tools with your package manager (Homebrew / apt / dnf / pacman), themes the terminals it detects (**kitty** & **Ghostty** automatically; **WezTerm**, **Alacritty** & **iTerm2** get the scheme + a one-line instruction), and wires up your shell (`zsh`/`bash`). Other flags: `--terminal=kitty,wezterm`, `--skip-deps`, `--uninstall`, `--yes`.
+
+**Prefer to read it first?** Clone the repo and run `.\install.ps1` (or `./install.sh`) locally — every config it places lives in [`config/`](config/), and it writes a `*.squintless-*.bak` next to anything it changes. Nothing is hidden.
 
 > ⭐ If Squintless saves your eyes, a star genuinely helps it reach the next person squinting at their screen.
 
@@ -45,9 +57,9 @@ The installer is **idempotent** and **non-destructive** — it backs up every fi
 
 | Layer | What Squintless sets up |
 | --- | --- |
-| **Terminal** | A `Squintless (Gruvbox Light)` **or** `Squintless (Tokyo Night Moon)` Windows Terminal color scheme (soft `#F2E5BC` or deep `#222436` background, no harsh white) |
+| **Terminal** | A `Squintless (Gruvbox Light)` **or** `Squintless (Tokyo Night Moon)` color scheme — soft `#F2E5BC` or deep `#222436`, no harsh white. Windows Terminal on Windows; kitty / WezTerm / Alacritty / Ghostty / iTerm2 on macOS & Linux |
 | **Font** | JetBrains Mono Nerd Font, installed from the official Nerd Fonts release |
-| **Shell** | Themed PowerShell — PSReadLine syntax colors in your chosen palette, an oh-my-posh prompt, plus `zoxide` / `eza` / `bat` / `lazygit` wired in |
+| **Shell** | A themed oh-my-posh prompt in your palette — PowerShell on Windows, `zsh`/`bash` on macOS & Linux — plus `zoxide` / `eza` / `bat` / `lazygit` wired in (and PSReadLine syntax colors on PowerShell) |
 | **Git** | `git-delta` with a matching syntax theme (`gruvbox-light` / `TwoDark`) — readable diffs that match everything else |
 | **Claude Code** *(optional)* | `theme` matched to your variant + a curated [ccstatusline](https://github.com/sirmalloc/ccstatusline) statusline |
 
@@ -83,6 +95,17 @@ Light themes exist, but they're usually **just a color scheme** — the prompt, 
 - **Legible** — JetBrains Mono Nerd Font with grayscale antialiasing (crisp on modern/OLED panels).
 - **Honest config** — every value is in `config/`, copy what you like.
 
+## The research — why these exact colors
+
+Squintless isn't a vibe — the palette traces to how eyes actually read a screen. Every contrast number below is **computed from the palette** by [`tools/gen.py`](tools/gen.py) (full table: [`config/generated/wcag-contrast.md`](config/generated/wcag-contrast.md)); the physiological notes are rationale, with the [full write-up here](https://sameerzahir.com/thoughts/an-afternoon-not-a-degree/).
+
+- **No glaring white, no pure black.** Light is a warm `#F2E5BC` (≈78% of pure white's luminance — softer in a bright room); dark is `#222436`, *not* `#000000`. Bright text on true black causes halation/ghosting that's worse for the substantial share of people with astigmatism, so the dark background keeps some luminance.
+- **Body text clears WCAG AAA.** Foreground-on-background contrast is **9.2:1** (light) and **10.3:1** (dark) — past the 7:1 AAA bar for normal text. Accent colors (git status, syntax) sit in the 3–7:1 range by design: legible as accents on a calm background, not body copy.
+- **Weight that survives rendering.** The font is set to **Medium**, which holds up better than Regular under ClearType / grayscale subpixel rendering on HiDPI panels — thin strokes are where "blurry on Windows" usually comes from.
+- **Light leans default.** Dark text on a light background (positive polarity) tends to be read a touch faster for typical vision — so light is the default, with dark a first-class choice for low-light rooms.
+
+No unsourced clinical claims here: the numbers regenerate from the palette, and the "why" links to the longer story.
+
 ## Tuning for your display
 
 The **light** variant's `-WithTerminalDefaults` are tuned for a **HiDPI / OLED laptop** (≈215 PPI, 200% scaling); the **dark** variant ships ClearType at size `15` for a standard LCD. Adjust either in Windows Terminal (Settings → your profile → Appearance, or `profiles.defaults`):
@@ -93,23 +116,28 @@ The **light** variant's `-WithTerminalDefaults` are tuned for a **HiDPI / OLED l
 | `font.cellHeight` | `1.35` | `1.0`–`1.15` |
 | `font.size` | `14` | `11`–`12` |
 
+*(macOS/Linux: `install.sh` themes colors only — set your terminal's font to a JetBrains Mono Nerd Font at a comfortable size yourself.)*
+
 ## What the installer does (and how to undo it)
 
-1. Installs dependencies with `winget` (oh-my-posh, delta, zoxide, eza, bat, lazygit, bun) and the JetBrains Mono Nerd Font via oh-my-posh.
-2. Adds your chosen (light or dark) color scheme to your Windows Terminal `settings.json` (and, with `-WithTerminalDefaults`, the font/render defaults).
-3. Copies the oh-my-posh theme to `~/.config/ohmyposh/` (`squintless.omp.json` or `squintless.dark.omp.json`).
-4. Adds a marker-delimited block to your PowerShell `$PROFILE` (PSReadLine colors + tool init).
+1. Installs the tools (oh-my-posh, delta, zoxide, eza, bat, lazygit) + the JetBrains Mono Nerd Font — via `winget` on Windows, Homebrew/apt/dnf/pacman on macOS & Linux.
+2. Adds your chosen scheme to your terminal — a non-destructive **fragment** + active scheme on Windows; a kitty/Ghostty `include` (or a dropped scheme + one-line instruction for WezTerm/Alacritty/iTerm2) on macOS & Linux.
+3. Copies the oh-my-posh theme to `~/.config/ohmyposh/`.
+4. Adds a marker-delimited block to your shell startup file — PowerShell `$PROFILE`, or `~/.zshrc` / `~/.bash_profile` / `~/.bashrc` — that loads the prompt + tool init.
 5. Configures `git-delta` in `~/.gitconfig`.
-6. *(optional, `-WithClaude`)* installs ccstatusline and sets the Claude Code `theme` (matching your variant) + statusline.
+6. *(optional, `-WithClaude` / `--with-claude`)* installs ccstatusline and sets the Claude Code `theme` (matching your variant) + statusline.
 
-**Uninstall:** re-run the installer with `-Uninstall`:
+**Uninstall** — `-Uninstall` (Windows) or `--uninstall` (macOS/Linux):
 
 ```powershell
 $s = irm https://raw.githubusercontent.com/sameer-zahir/squintless/main/install.ps1
 & ([scriptblock]::Create($s)) -Uninstall
 ```
+```bash
+curl -fsSL https://raw.githubusercontent.com/sameer-zahir/squintless/main/install.sh | bash -s -- --uninstall
+```
 
-It removes the profile block, the Windows Terminal color scheme, the `git-delta` config and the oh-my-posh theme — backing up each file first, and leaving winget-installed tools in place. Prefer to do it by hand? Delete the `# >>> squintless >>> … # <<< squintless <<<` block from your `$PROFILE`, or restore any `*.squintless-*.bak` backup. Nothing installs a service or runs in the background.
+It removes the shell block, the color scheme, the `git-delta` config and the oh-my-posh theme — backing up each file first and leaving installed tools in place. Prefer to do it by hand? Delete the `# >>> squintless >>> … # <<< squintless <<<` block, or restore any `*.squintless-*.bak` backup. Nothing installs a service or runs in the background.
 
 ## Prefer to cherry-pick?
 
@@ -118,12 +146,15 @@ Clone it and take only the pieces you want — every file in [`config/`](config/
 ```powershell
 git clone https://github.com/sameer-zahir/squintless.git
 cd squintless
-.\install.ps1 -WithTerminalDefaults -WithClaude   # or copy individual config files by hand
+.\install.ps1 -WithTerminalDefaults -WithClaude   # Windows — or copy individual config files by hand
+```
+```bash
+./install.sh --with-claude                         # macOS / Linux
 ```
 
 ## Use it inside Claude Code
 
-Squintless is also a tiny **Claude Code plugin**. Add the marketplace and install it, then run `/squintless-setup` and Claude will set up your chosen (light or dark) theme + statusline for you:
+Squintless is also a tiny **Claude Code plugin**. Add the marketplace, install it, then run `/squintless-setup` — Claude walks you through it for your OS: the full terminal install on Windows / macOS / Linux, or just the Claude Code `theme` + statusline anywhere.
 
 ```
 /plugin marketplace add sameer-zahir/squintless
@@ -136,7 +167,7 @@ Made by **[Sameer Zahir](https://sameerzahir.com)** · [@sameer-zahir](https://g
 
 Built on the shoulders of [Gruvbox](https://github.com/morhetz/gruvbox), [JetBrains Mono](https://www.jetbrains.com/lp/mono/), [Nerd Fonts](https://github.com/ryanoasis/nerd-fonts), [oh-my-posh](https://ohmyposh.dev), [git-delta](https://github.com/dandavison/delta) and [ccstatusline](https://github.com/sirmalloc/ccstatusline). The color scheme is also available for other terminals via [iTerm2-Color-Schemes](https://github.com/mbadolato/iTerm2-Color-Schemes).
 
-Contributions welcome — macOS/Linux install scripts and more terminals are all fair game. Open an issue or PR.
+Contributions welcome — more terminals, more package managers, and a Homebrew tap are all fair game. Open an issue or PR.
 
 <div align="center">
 
