@@ -61,10 +61,13 @@ def main() -> int:
     # 3. Version sync across the three sources of truth.
     version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
     plugin = load_json(ROOT / "claude-plugin/.claude-plugin/plugin.json") or {}
-    m = re.search(r"\$SquintlessVersion\s*=\s*'([^']+)'",
-                  (ROOT / "install.ps1").read_text(encoding="utf-8"))
+    m_ps = re.search(r"\$SquintlessVersion\s*=\s*'([^']+)'",
+                     (ROOT / "install.ps1").read_text(encoding="utf-8"))
+    m_sh = re.search(r'SQUINTLESS_VERSION="([^"]+)"',
+                     (ROOT / "install.sh").read_text(encoding="utf-8"))
     versions = {"VERSION": version, "plugin.json": plugin.get("version"),
-                "install.ps1": m.group(1) if m else None}
+                "install.ps1": m_ps.group(1) if m_ps else None,
+                "install.sh": m_sh.group(1) if m_sh else None}
     if len(set(versions.values())) != 1:
         errs.append(f"version mismatch: {versions}")
 

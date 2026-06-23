@@ -40,6 +40,25 @@ teardown() { rm -rf "$TMPH"; }
   [ "$output" = "true" ]
 }
 
+@test "kitty themes via include; wezterm.lua and alacritty.toml are left untouched" {
+  mkdir -p "$TMPH/.config/kitty" "$TMPH/.config/wezterm" "$TMPH/.config/alacritty"
+  printf 'return {\n  font_size = 12,\n}\n' > "$TMPH/.config/wezterm/wezterm.lua"
+  printf '[window]\nopacity = 0.9\n'         > "$TMPH/.config/alacritty/alacritty.toml"
+  printf 'font_size 12\n'                    > "$TMPH/.config/kitty/kitty.conf"
+  wz="$(cat "$TMPH/.config/wezterm/wezterm.lua")"
+  al="$(cat "$TMPH/.config/alacritty/alacritty.toml")"
+  run bash "$REPO/install.sh" --skip-deps --light --yes
+  [ "$status" -eq 0 ]
+  # kitty: safe include + dropped scheme file
+  [ "$(grep -c 'include squintless' "$TMPH/.config/kitty/kitty.conf")" -eq 1 ]
+  [ -f "$TMPH/.config/kitty/squintless-light.conf" ]
+  # wezterm.lua (Lua) and alacritty.toml (TOML) must NOT be edited - our markers would corrupt them
+  [ "$wz" = "$(cat "$TMPH/.config/wezterm/wezterm.lua")" ]
+  [ "$al" = "$(cat "$TMPH/.config/alacritty/alacritty.toml")" ]
+  [ -f "$TMPH/.config/wezterm/colors/Squintless-light.toml" ]
+  [ -f "$TMPH/.config/alacritty/squintless-light.toml" ]
+}
+
 @test "uninstall reverses the install" {
   bash "$REPO/install.sh" --skip-deps --light --yes
   run bash "$REPO/install.sh" --uninstall

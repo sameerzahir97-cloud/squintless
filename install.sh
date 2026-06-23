@@ -151,7 +151,8 @@ rc_file() {
   case "$(shell_name)" in
     zsh) printf '%s/.zshrc' "$HOME" ;;
     bash)
-      if [ "$(uname -s)" = "Darwin" ] && [ -f "$HOME/.bash_profile" ]; then printf '%s/.bash_profile' "$HOME"
+      # macOS Terminal/iTerm start LOGIN bash, which reads ~/.bash_profile, not ~/.bashrc.
+      if [ "$(uname -s)" = "Darwin" ]; then printf '%s/.bash_profile' "$HOME"
       else printf '%s/.bashrc' "$HOME"; fi ;;
     *) printf '%s/.profile' "$HOME" ;;
   esac
@@ -191,11 +192,13 @@ if [ "$UNINSTALL" -eq 1 ]; then
   for omp in squintless.omp.json squintless.dark.omp.json; do
     [ -f "$HOME/.config/ohmyposh/$omp" ] && { rm -f "$HOME/.config/ohmyposh/$omp"; ok "removed oh-my-posh theme ($omp)"; }
   done
-  # terminal includes
+  # terminal config: remove our include lines (kitty/ghostty) + every dropped scheme file
   remove_block "$HOME/.config/kitty/kitty.conf"
-  remove_block "$HOME/.config/wezterm/wezterm.lua"
-  remove_block "$HOME/.config/alacritty/alacritty.toml"
   remove_block "$HOME/.config/ghostty/config"
+  rm -f "$HOME/.config/kitty/squintless-light.conf" "$HOME/.config/kitty/squintless-dark.conf" 2>/dev/null || true
+  rm -f "$HOME/.config/ghostty/themes/squintless-light" "$HOME/.config/ghostty/themes/squintless-dark" 2>/dev/null || true
+  rm -f "$HOME/.config/wezterm/colors/Squintless-light.toml" "$HOME/.config/wezterm/colors/Squintless-dark.toml" 2>/dev/null || true
+  rm -f "$HOME/.config/alacritty/squintless-light.toml" "$HOME/.config/alacritty/squintless-dark.toml" 2>/dev/null || true
   rm -f "$HOME"/.config/squintless/schemes/* 2>/dev/null || true
   rmdir "$HOME/.config/squintless/schemes" 2>/dev/null || true
   if have git; then
@@ -265,6 +268,7 @@ install_one() {
       else
         mkdir -p "$HOME/.local/bin"
         curl -fsSL https://ohmyposh.dev/install.sh | bash -s -- -d "$HOME/.local/bin" >/dev/null 2>&1 || warn "oh-my-posh install script failed"
+        case ":$PATH:" in *":$HOME/.local/bin:"*) ;; *) PATH="$HOME/.local/bin:$PATH" ;; esac
       fi ;;
     *)
       local pkg; pkg="$(pkg_name "$tool")"
@@ -319,6 +323,7 @@ ok "oh-my-posh theme -> ~/.config/ohmyposh/$OMP_FILE"
 SHELL_ID="$(shell_name)"; [ "$SHELL_ID" = "zsh" ] || SHELL_ID="bash"
 cat > "$SQDIR/init.sh" <<EOF
 # Squintless shell init ($LABEL) - sourced from your shell rc. Safe to read.
+case ":\$PATH:" in *":\$HOME/.local/bin:"*) ;; *) [ -d "\$HOME/.local/bin" ] && PATH="\$HOME/.local/bin:\$PATH" ;; esac
 if command -v oh-my-posh >/dev/null 2>&1; then
   eval "\$(oh-my-posh init $SHELL_ID --config "\$HOME/.config/ohmyposh/$OMP_FILE")"
 fi
@@ -384,16 +389,16 @@ if want_terminal kitty; then
   ok "kitty themed (include in kitty.conf)"; THEMED=1
 fi
 if want_terminal wezterm; then
+  # wezterm.lua is Lua - our '#' markers aren't comments there, so drop the scheme + instruct (never edit it).
   d="$HOME/.config/wezterm"; mkdir -p "$d/colors"
   get_file "generated/wezterm/squintless-$GEN.toml" > "$d/colors/Squintless-$GEN.toml"
-  add_terminal_include "$d/wezterm.lua" "-- Squintless: add  config.color_scheme = '$SCHEME_NAME'  to your config"
-  ok "wezterm scheme placed in colors/ (set color_scheme = '$SCHEME_NAME')"; THEMED=1
+  ok "wezterm: scheme placed in colors/ - add to wezterm.lua:  config.color_scheme = '$SCHEME_NAME'"; THEMED=1
 fi
 if want_terminal alacritty; then
+  # appending a top-level 'general.import' after existing [tables] is invalid TOML - drop + instruct.
   d="$HOME/.config/alacritty"; mkdir -p "$d"
   get_file "generated/alacritty/squintless-$GEN.toml" > "$d/squintless-$GEN.toml"
-  add_terminal_include "$d/alacritty.toml" "general.import = [\"~/.config/alacritty/squintless-$GEN.toml\"]"
-  ok "alacritty themed (import in alacritty.toml)"; THEMED=1
+  ok "alacritty: scheme placed - add under [general] in alacritty.toml:  import = [\"~/.config/alacritty/squintless-$GEN.toml\"]"; THEMED=1
 fi
 if want_terminal ghostty; then
   d="$HOME/.config/ghostty"; mkdir -p "$d/themes"

@@ -106,11 +106,13 @@ def emit_alacritty(p):
         for k, v in mapping.items():
             lines.append(f'{k} = "{v}"')
         return "\n".join(lines)
-    normal = {"black": c["black"], "red": c["red"], "green": c["green"], "yellow": c["yellow"],
-              "blue": c["blue"], "magenta": c["purple"], "cyan": c["cyan"], "white": c["white"]}
-    bright = {"black": c["brightBlack"], "red": c["brightRed"], "green": c["brightGreen"],
-              "yellow": c["brightYellow"], "blue": c["brightBlue"], "magenta": c["brightPurple"],
-              "cyan": c["brightCyan"], "white": c["brightWhite"]}
+    def alac(keys):  # alacritty names our 'purple' slot 'magenta'; bright lives in its own table
+        out = {}
+        for k in keys:
+            name = "magenta" if k.lower().endswith("purple") else k.replace("bright", "").lower()
+            out[name] = c[k]
+        return out
+    normal, bright = alac(NORMAL), alac(BRIGHT)
     parts = [f"# {p['scheme_name']} -- {BANNER}",
              block("primary", {"background": c["background"], "foreground": c["foreground"]}),
              block("cursor", {"cursor": c["cursor"], "text": c["background"]}),
@@ -262,7 +264,7 @@ def main(argv):
             return 1
         print(f"OK: all {len(outputs)} generated files up to date.")
         return 0
-    print(f"wrote {len(outputs)} files from {len(list(PALETTES.glob('*.json')))} palettes.")
+    print(f"wrote {len(outputs)} files.")
     return 0
 
 

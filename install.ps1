@@ -321,8 +321,11 @@ if ($SkipDeps) {
         Write-Host "    installing $($d.Name)..." -ForegroundColor DarkGray
         winget install --id $d.Id -e --source winget --accept-package-agreements --accept-source-agreements --disable-interactivity | Out-Null
         $code = $LASTEXITCODE
-        # winget updates the machine/user PATH, not this live session - refresh so the new shim resolves.
-        $env:Path = (([Environment]::GetEnvironmentVariable('Path', 'Machine')), ([Environment]::GetEnvironmentVariable('Path', 'User')) -join ';')
+        # winget updates the machine/user PATH, not this live session - APPEND any new entries
+        # (overwriting $env:Path would drop process-only shims like fnm/nvm node).
+        foreach ($p in ((([Environment]::GetEnvironmentVariable('Path', 'Machine')), ([Environment]::GetEnvironmentVariable('Path', 'User')) -join ';') -split ';')) {
+          if ($p -and (($env:Path -split ';') -notcontains $p)) { $env:Path += ";$p" }
+        }
         if ($code -eq 0 -and (Get-Command $d.Cmd -ErrorAction SilentlyContinue)) { Write-Ok "$($d.Name)" }
         elseif ($code -eq 0) { Write-Warn2 "$($d.Name): winget reported success but '$($d.Cmd)' isn't on PATH yet - open a new shell, or install it manually." }
         else { Write-Warn2 "winget couldn't install $($d.Name) (exit $code) - install it manually later." }

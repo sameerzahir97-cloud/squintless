@@ -24,11 +24,5 @@
     "brightPurple": "#C099FF",
     "brightCyan": "#86E1FC",
     "brightWhite": "#C8D3F5"
-  },
-  "tooling": {
-    "bat_theme": "TwoDark",
-    "delta_polarity": "dark",
-    "delta_syntax_theme": "TwoDark",
-    "claude_theme": "dark"
   }
 }

@@ -24,11 +24,5 @@
     "brightPurple": "#8F3F71",
     "brightCyan": "#427B58",
     "brightWhite": "#3C3836"
-  },
-  "tooling": {
-    "bat_theme": "gruvbox-light",
-    "delta_polarity": "light",
-    "delta_syntax_theme": "gruvbox-light",
-    "claude_theme": "light"
   }
 }
