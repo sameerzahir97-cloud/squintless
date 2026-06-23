@@ -1,0 +1,19 @@
+# Squintless - git-delta with a dark syntax theme (pairs with the Tokyo Night Moon variant).
+# Merge these sections into your ~/.gitconfig (requires: winget install dandavison.delta).
+# Prefer a different dark theme? Set syntax-theme to any `bat --list-themes` value
+# (e.g. Nord, gruvbox-dark, Dracula, OneHalfDark).
+
+[core]
+	pager = delta
+
+[interactive]
+	diffFilter = delta --color-only
+
+[delta]
+	navigate = true
+	line-numbers = true
+	dark = true
+	syntax-theme = TwoDark
+
+[merge]
+	conflictStyle = zdiff3

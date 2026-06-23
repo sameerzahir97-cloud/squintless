@@ -1,12 +1,11 @@
 {
   "adjustIndistinguishableColors": "always",
-  "antialiasingMode": "grayscale",
-  "colorScheme": "Squintless (Gruvbox Light)",
-  "cursorShape": "bar",
+  "antialiasingMode": "cleartype",
+  "colorScheme": "Squintless (Tokyo Night Moon)",
+  "cursorShape": "filledBox",
   "font": {
-    "cellHeight": "1.35",
     "face": "JetBrainsMono Nerd Font",
-    "size": 14,
+    "size": 15,
     "weight": "medium"
   },
   "intenseTextStyle": "bold",

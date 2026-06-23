@@ -1,0 +1,58 @@
+name: release
+
+# Cuts a GitHub Release and publishes the PowerShell Gallery module when a vX.Y.Z
+# tag is pushed. PS Gallery publish is skipped unless the PSGALLERY_KEY secret is set.
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Validate + generated freshness + version sync
+        run: |
+          python tools/validate.py
+          python tools/gen.py --check
+          # tag (vX.Y.Z) must match VERSION
+          test "v$(cat VERSION)" = "${{ github.ref_name }}"
+
+      - name: Build release assets
+        run: |
+          mkdir -p dist
+          zip -rq dist/squintless-config.zip config palettes
+          cp install.ps1 install.sh dist/
+          (cd dist && sha256sum squintless-config.zip install.ps1 install.sh > SHA256SUMS)
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ github.ref_name }}" \
+            dist/install.ps1 dist/install.sh dist/squintless-config.zip dist/SHA256SUMS \
+            --title "${{ github.ref_name }}" \
+            --notes "Squintless ${{ github.ref_name }}. Verify downloads against SHA256SUMS. See the README for install."
+
+  publish-psgallery:
+    needs: release
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Publish module to PowerShell Gallery
+        shell: pwsh
+        env:
+          PSGALLERY_KEY: ${{ secrets.PSGALLERY_KEY }}
+        run: |
+          if (-not $env:PSGALLERY_KEY) { Write-Host 'PSGALLERY_KEY not set - skipping publish.'; exit 0 }
+          Test-ModuleManifest module/Squintless/Squintless.psd1
+          Publish-Module -Path module/Squintless -NuGetApiKey $env:PSGALLERY_KEY -Verbose

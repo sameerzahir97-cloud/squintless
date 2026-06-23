@@ -1,0 +1,28 @@
+{
+  "name": "Gruvbox Light",
+  "scheme_name": "Squintless (Gruvbox Light)",
+  "variant": "light",
+  "author": "Sameer Zahir",
+  "colors": {
+    "background": "#F2E5BC",
+    "foreground": "#3C3836",
+    "cursor": "#282828",
+    "selection_background": "#D5C4A1",
+    "black": "#F2E5BC",
+    "red": "#9D0006",
+    "green": "#79740E",
+    "yellow": "#B57614",
+    "blue": "#076678",
+    "purple": "#8F3F71",
+    "cyan": "#427B58",
+    "white": "#7C6F64",
+    "brightBlack": "#928374",
+    "brightRed": "#9D0006",
+    "brightGreen": "#79740E",
+    "brightYellow": "#B57614",
+    "brightBlue": "#076678",
+    "brightPurple": "#8F3F71",
+    "brightCyan": "#427B58",
+    "brightWhite": "#3C3836"
+  }
+}

@@ -18,3 +18,7 @@ desktop.ini
 
 # Node (only if the optional npm package is added later)
 node_modules/
+
+# Python (tools/gen.py bytecode cache)
+__pycache__/
+*.pyc
