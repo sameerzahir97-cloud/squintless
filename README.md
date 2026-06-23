@@ -5,7 +5,7 @@
 ### Easy on the eyes.
 
 A one-command, eye-strain–optimized terminal + Claude Code setup for Windows.
-Gruvbox-light done *cohesively* — terminal, font, shell, git diffs and your Claude Code statusline all speak the same calm palette.
+Pick your palette — soft **Gruvbox light** (default) or deep **Tokyo Night Moon** (dark) — done *cohesively*: terminal, font, shell, git diffs and your Claude Code statusline all speak the same calm palette.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-79740E.svg)](LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/sameer-zahir/squintless?style=flat&color=B57614)](https://github.com/sameer-zahir/squintless/stargazers)
@@ -20,18 +20,20 @@ Gruvbox-light done *cohesively* — terminal, font, shell, git diffs and your Cl
 
 **Requires:** Windows · [PowerShell 7+](https://aka.ms/powershell) · [Windows Terminal](https://aka.ms/terminal). Not on PowerShell 7 yet? `winget install Microsoft.PowerShell`, then open `pwsh` and paste the line below. *(macOS/Linux scripts welcome — [PRs open](https://github.com/sameer-zahir/squintless/pulls).)*
 
-One line in **PowerShell 7+** — adds the Gruvbox-light scheme and applies it for you:
+One line in **PowerShell 7+** — it asks **light or dark**, then adds that scheme and applies it for you:
 
 ```powershell
 irm https://raw.githubusercontent.com/sameer-zahir/squintless/main/install.ps1 | iex
 ```
 
-Want the full treatment (also apply the **OLED-tuned font/render defaults** to Windows Terminal **and** theme Claude Code)?
+Know which you want? Skip the prompt with `-Light` or `-Dark`, and add the full treatment (the **font/render defaults** for Windows Terminal **and** the matching Claude Code theme):
 
 ```powershell
 $s = irm https://raw.githubusercontent.com/sameer-zahir/squintless/main/install.ps1
-& ([scriptblock]::Create($s)) -WithTerminalDefaults -WithClaude
+& ([scriptblock]::Create($s)) -Dark -WithTerminalDefaults -WithClaude
 ```
+
+*(Piping `irm | iex` in a non-interactive shell skips the prompt and defaults to light.)*
 
 The installer is **idempotent** and **non-destructive** — it backs up every file it touches (`*.squintless-*.bak`), only wires up tools you actually have, and you can re-run it any time. Restart your terminal when it's done.
 
@@ -43,13 +45,30 @@ The installer is **idempotent** and **non-destructive** — it backs up every fi
 
 | Layer | What Squintless sets up |
 | --- | --- |
-| **Terminal** | A `Squintless (Gruvbox Light)` Windows Terminal color scheme (soft `#F2E5BC` background, no harsh white) |
+| **Terminal** | A `Squintless (Gruvbox Light)` **or** `Squintless (Tokyo Night Moon)` Windows Terminal color scheme (soft `#F2E5BC` or deep `#222436` background, no harsh white) |
 | **Font** | JetBrains Mono Nerd Font, installed from the official Nerd Fonts release |
-| **Shell** | Themed PowerShell — PSReadLine syntax colors in the Gruvbox palette, an oh-my-posh prompt, plus `zoxide` / `eza` / `bat` / `lazygit` wired in |
-| **Git** | `git-delta` with the `gruvbox-light` syntax theme — readable diffs that match everything else |
-| **Claude Code** *(optional)* | `theme: light` + a curated [ccstatusline](https://github.com/sirmalloc/ccstatusline) statusline |
+| **Shell** | Themed PowerShell — PSReadLine syntax colors in your chosen palette, an oh-my-posh prompt, plus `zoxide` / `eza` / `bat` / `lazygit` wired in |
+| **Git** | `git-delta` with a matching syntax theme (`gruvbox-light` / `TwoDark`) — readable diffs that match everything else |
+| **Claude Code** *(optional)* | `theme` matched to your variant + a curated [ccstatusline](https://github.com/sirmalloc/ccstatusline) statusline |
 
 Everything is plain config you can read in [`config/`](config/) — nothing hidden.
+
+## Light or dark
+
+Two cohesive palettes, same treatment end-to-end. The installer asks which you want, or pass `-Light` / `-Dark`:
+
+<div align="center">
+
+![Squintless dark variant — Tokyo Night Moon](assets/hero-dark.png)
+
+</div>
+
+| Variant | Scheme | Background | Built for |
+| --- | --- | --- | --- |
+| **Light** *(default)* | `Squintless (Gruvbox Light)` | `#F2E5BC` | bright rooms, long daytime sessions |
+| **Dark** | `Squintless (Tokyo Night Moon)` | `#222436` | low light, late-night sessions |
+
+Each variant carries its own scheme, oh-my-posh prompt, PSReadLine syntax colors, `git-delta` theme and font/render defaults — the `.dark.*` files in [`config/`](config/) mirror the light ones, recolored.
 
 ## Why
 
@@ -66,7 +85,7 @@ Light themes exist, but they're usually **just a color scheme** — the prompt, 
 
 ## Tuning for your display
 
-The defaults are tuned for a **HiDPI / OLED laptop** (≈215 PPI, 200% scaling). On a standard LCD, adjust these in Windows Terminal (Settings → your profile → Appearance, or `profiles.defaults`):
+The **light** variant's `-WithTerminalDefaults` are tuned for a **HiDPI / OLED laptop** (≈215 PPI, 200% scaling); the **dark** variant ships ClearType at size `15` for a standard LCD. Adjust either in Windows Terminal (Settings → your profile → Appearance, or `profiles.defaults`):
 
 | Setting | Squintless default (OLED/HiDPI) | Standard LCD |
 | --- | --- | --- |
@@ -77,11 +96,11 @@ The defaults are tuned for a **HiDPI / OLED laptop** (≈215 PPI, 200% scaling).
 ## What the installer does (and how to undo it)
 
 1. Installs dependencies with `winget` (oh-my-posh, delta, zoxide, eza, bat, lazygit, bun) and the JetBrains Mono Nerd Font via oh-my-posh.
-2. Adds the color scheme to your Windows Terminal `settings.json` (and, with `-WithTerminalDefaults`, the font/render defaults).
-3. Copies the oh-my-posh theme to `~/.config/ohmyposh/squintless.omp.json`.
+2. Adds your chosen (light or dark) color scheme to your Windows Terminal `settings.json` (and, with `-WithTerminalDefaults`, the font/render defaults).
+3. Copies the oh-my-posh theme to `~/.config/ohmyposh/` (`squintless.omp.json` or `squintless.dark.omp.json`).
 4. Adds a marker-delimited block to your PowerShell `$PROFILE` (PSReadLine colors + tool init).
 5. Configures `git-delta` in `~/.gitconfig`.
-6. *(optional, `-WithClaude`)* installs ccstatusline and sets Claude Code `theme: light` + statusline.
+6. *(optional, `-WithClaude`)* installs ccstatusline and sets the Claude Code `theme` (matching your variant) + statusline.
 
 **Uninstall:** re-run the installer with `-Uninstall`:
 
@@ -104,7 +123,7 @@ cd squintless
 
 ## Use it inside Claude Code
 
-Squintless is also a tiny **Claude Code plugin**. Add the marketplace and install it, then run `/squintless-setup` and Claude will set up the light theme + statusline for you:
+Squintless is also a tiny **Claude Code plugin**. Add the marketplace and install it, then run `/squintless-setup` and Claude will set up your chosen (light or dark) theme + statusline for you:
 
 ```
 /plugin marketplace add sameer-zahir/squintless
@@ -117,7 +136,7 @@ Made by **[Sameer Zahir](https://sameerzahir.com)** · [@sameer-zahir](https://g
 
 Built on the shoulders of [Gruvbox](https://github.com/morhetz/gruvbox), [JetBrains Mono](https://www.jetbrains.com/lp/mono/), [Nerd Fonts](https://github.com/ryanoasis/nerd-fonts), [oh-my-posh](https://ohmyposh.dev), [git-delta](https://github.com/dandavison/delta) and [ccstatusline](https://github.com/sirmalloc/ccstatusline). The color scheme is also available for other terminals via [iTerm2-Color-Schemes](https://github.com/mbadolato/iTerm2-Color-Schemes).
 
-Contributions welcome — macOS/Linux install scripts, a dark variant, and more terminals are all fair game. Open an issue or PR.
+Contributions welcome — macOS/Linux install scripts and more terminals are all fair game. Open an issue or PR.
 
 <div align="center">
 

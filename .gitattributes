@@ -1,0 +1,11 @@
+# Shell scripts must stay LF — CRLF breaks them on macOS/Linux.
+*.sh        text eol=lf
+install.sh  text eol=lf
+
+# Generator inputs/outputs: LF for stable, cross-platform diffs.
+config/generated/** text eol=lf
+palettes/*.json     text eol=lf
+tools/*.py          text eol=lf
+
+# Binary assets.
+*.png binary

@@ -1,8 +1,8 @@
 {
   "name": "squintless",
   "displayName": "Squintless",
-  "version": "1.0.0",
-  "description": "Easy on the eyes - a light Claude Code theme + curated ccstatusline statusline, and a /squintless-setup skill that walks you through the full Gruvbox-light terminal setup.",
+  "version": "1.1.0",
+  "description": "Easy on the eyes - a light or dark Claude Code theme + curated ccstatusline statusline, and a /squintless-setup skill that walks you through the full Gruvbox-light or Tokyo Night Moon terminal setup.",
   "author": {
     "name": "Sameer Zahir",
     "email": "sameerzahir97@gmail.com",
@@ -11,5 +11,5 @@
   "homepage": "https://github.com/sameer-zahir/squintless",
   "repository": "https://github.com/sameer-zahir/squintless",
   "license": "MIT",
-  "keywords": ["theme", "light-theme", "gruvbox", "eye-strain", "accessibility", "statusline", "terminal"]
+  "keywords": ["theme", "light-theme", "dark-theme", "gruvbox", "tokyo-night", "eye-strain", "accessibility", "statusline", "terminal"]
 }

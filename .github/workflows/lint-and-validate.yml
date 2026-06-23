@@ -1,0 +1,22 @@
+name: lint-and-validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Validate repo (JSON, schemes, version sync)
+        run: python tools/validate.py
+
+      - name: Generated files are fresh
+        run: python tools/gen.py --check
