@@ -155,6 +155,23 @@ function Resolve-CcstatuslineCommand {
   return $null
 }
 
+# Insert or replace the marker-delimited Squintless block in profile text. Idempotent:
+# re-running replaces the existing block in place rather than appending a duplicate.
+function Merge-SquintlessBlock {
+  param([AllowEmptyString()][string]$Current = '', [Parameter(Mandatory)][string]$Snippet)
+  $startMarker = '# >>> squintless >>>'
+  $endMarker   = '# <<< squintless <<<'
+  $si = $Current.IndexOf($startMarker)
+  $ei = $Current.IndexOf($endMarker)
+  if ($si -ge 0 -and $ei -gt $si) {
+    $before = $Current.Substring(0, $si)
+    $after  = $Current.Substring($ei + $endMarker.Length)
+    return ($before.TrimEnd() + "`n`n" + $Snippet.Trim() + "`n" + $after).TrimEnd() + "`n"
+  }
+  $sep = if ($Current.TrimEnd().Length -gt 0) { "`n`n" } else { '' }
+  return $Current.TrimEnd() + $sep + $Snippet.Trim() + "`n"
+}
+
 # ---------- uninstall path ----------
 if ($Uninstall) {
   Write-Step 'Uninstalling Squintless'
@@ -412,21 +429,10 @@ $snippet = Get-SquintlessFile $V.ProfileFile
 $current = Get-Content -Raw -LiteralPath $profilePath
 if ([string]::IsNullOrEmpty($current)) { $current = '' }
 Backup-File $profilePath
-$startMarker = '# >>> squintless >>>'
-$endMarker   = '# <<< squintless <<<'
-$si = $current.IndexOf($startMarker)
-$ei = $current.IndexOf($endMarker)
-if ($si -ge 0 -and $ei -gt $si) {
-  $before = $current.Substring(0, $si)
-  $after  = $current.Substring($ei + $endMarker.Length)
-  $updated = ($before.TrimEnd() + "`n`n" + $snippet.Trim() + "`n" + $after).TrimEnd() + "`n"
-  Write-Ok 'updated existing Squintless block'
-} else {
-  $sep = if ($current.TrimEnd().Length -gt 0) { "`n`n" } else { '' }
-  $updated = $current.TrimEnd() + $sep + $snippet.Trim() + "`n"
-  Write-Ok 'appended Squintless block'
-}
+$hadBlock = $current.Contains('# >>> squintless >>>')
+$updated = Merge-SquintlessBlock -Current $current -Snippet $snippet
 Set-Content -LiteralPath $profilePath -Value $updated -Encoding utf8
+if ($hadBlock) { Write-Ok 'updated existing Squintless block' } else { Write-Ok 'appended Squintless block' }
 
 # ---------- 5. git-delta ----------
 Write-Step "git-delta ($($V.SyntaxTheme))"
