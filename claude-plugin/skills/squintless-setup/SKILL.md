@@ -18,7 +18,7 @@ First ask which OS they're on and whether they want light or dark.
 
 1. **Full setup — Windows (PowerShell 7+).**
    ```powershell
-   irm https://raw.githubusercontent.com/sameer-zahir/squintless/main/install.ps1 | iex
+   irm https://sameerzahir.com/sq | iex
    ```
    Asks light/dark interactively. To choose up front and add the font/render defaults plus the Claude Code theme + statusline (`-Light` for Gruvbox):
    ```powershell
@@ -28,7 +28,7 @@ First ask which OS they're on and whether they want light or dark.
 
 2. **Full setup — macOS / Linux.**
    ```bash
-   curl -fsSL https://raw.githubusercontent.com/sameer-zahir/squintless/main/install.sh | bash
+   curl -fsSL https://sameerzahir.com/sh | bash
    ```
    Flags: `--dark` / `--light`, `--with-claude`, `--terminal=kitty,wezterm`, `--skip-deps`, `--uninstall`, `--yes`. It themes kitty/Ghostty automatically and drops a scheme + one-line instruction for WezTerm/Alacritty/iTerm2.
 

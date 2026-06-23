@@ -3,8 +3,9 @@ main = "src/index.ts"
 compatibility_date = "2026-06-01"
 workers_dev = true
 
-# Optional custom domain (touches your zone — opt in when ready, then `wrangler deploy`):
-# routes = [
-#   { pattern = "sameerzahir.com/sq", zone_name = "sameerzahir.com" },
-#   { pattern = "sameerzahir.com/sh", zone_name = "sameerzahir.com" },
-# ]
+# Custom-domain routes — only /sq and /sh are intercepted; every other path on the
+# zone is untouched and served normally. Remove these lines + redeploy to revert.
+routes = [
+  { pattern = "sameerzahir.com/sq", zone_name = "sameerzahir.com" },
+  { pattern = "sameerzahir.com/sh", zone_name = "sameerzahir.com" },
+]

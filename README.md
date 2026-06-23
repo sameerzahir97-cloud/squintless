@@ -20,10 +20,12 @@ Pick your palette — soft **Gruvbox light** (default) or deep **Tokyo Night Moo
 
 It asks **light or dark** (or pass a flag), then sets everything up. The installer is **idempotent** and **non-destructive** — it backs up every file it touches (`*.squintless-*.bak`), only wires up tools you actually have, and you can re-run or uninstall any time. Restart your terminal when it's done.
 
+*(`sameerzahir.com/sq` and `/sh` are short 302-redirects to the raw `install.ps1` / `install.sh` on `main`. Prefer no redirect? Use the full `https://raw.githubusercontent.com/sameer-zahir/squintless/main/install.ps1`.)*
+
 ### Windows · [PowerShell 7+](https://aka.ms/powershell)
 
 ```powershell
-irm https://raw.githubusercontent.com/sameer-zahir/squintless/main/install.ps1 | iex
+irm https://sameerzahir.com/sq | iex
 ```
 
 Choose up front and add the full treatment (font/render defaults + the matching Claude Code theme):
@@ -38,7 +40,7 @@ $s = irm https://raw.githubusercontent.com/sameer-zahir/squintless/main/install.
 ### macOS · Linux
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/sameer-zahir/squintless/main/install.sh | bash
+curl -fsSL https://sameerzahir.com/sh | bash
 ```
 
 Choose up front and add Claude Code:
