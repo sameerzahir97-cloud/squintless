@@ -12,18 +12,21 @@ setup() {
 
 teardown() { rm -rf "$TMPH"; }
 
+# The rc file install.sh targets for bash: macOS login shells read ~/.bash_profile, Linux ~/.bashrc.
+rcfile() { if [ "$(uname -s)" = "Darwin" ]; then printf '%s/.bash_profile' "$TMPH"; else printf '%s/.bashrc' "$TMPH"; fi; }
+
 @test "install (--skip-deps --light --yes) writes init.sh, omp theme, one rc marker" {
   run bash "$REPO/install.sh" --skip-deps --light --yes
   [ "$status" -eq 0 ]
   [ -f "$TMPH/.config/squintless/init.sh" ]
   [ -f "$TMPH/.config/ohmyposh/squintless.omp.json" ]
-  [ "$(grep -c '>>> squintless' "$TMPH/.bashrc")" -eq 1 ]
+  [ "$(grep -c '>>> squintless' "$(rcfile)")" -eq 1 ]
 }
 
 @test "install is idempotent across re-runs and a variant switch" {
   bash "$REPO/install.sh" --skip-deps --light --yes
   bash "$REPO/install.sh" --skip-deps --dark --yes
-  [ "$(grep -c '>>> squintless' "$TMPH/.bashrc")" -eq 1 ]
+  [ "$(grep -c '>>> squintless' "$(rcfile)")" -eq 1 ]
 }
 
 @test "dark variant bakes the dark omp theme + TwoDark bat theme" {
@@ -64,6 +67,6 @@ teardown() { rm -rf "$TMPH"; }
   run bash "$REPO/install.sh" --uninstall
   [ "$status" -eq 0 ]
   [ ! -f "$TMPH/.config/squintless/init.sh" ]
-  run grep -c '>>> squintless' "$TMPH/.bashrc"
+  run grep -c '>>> squintless' "$(rcfile)"
   [ "$output" = "0" ]
 }
